@@ -34,7 +34,7 @@ typedef struct Message
 } AMessage;
 
 xQueueHandle controllerToLCDQueue;
-xQueueHandle xTimeQueue;
+xQueueHandle uartToControllerQueue;
 
 void incrementTime(AMessage *currentTime)
 {
@@ -59,7 +59,7 @@ void TimeController(void *pvParameters)
 {
 	AMessage currentTime;
 
-	xQueueReceive(xTimeQueue, &currentTime, portMAX_DELAY);
+	xQueueReceive(uartToControllerQueue, &currentTime, portMAX_DELAY);
 
 	TickType_t xLastWakeTime = xTaskGetTickCount();
 	const int oneSecond = msToTicks(1000);
@@ -115,7 +115,7 @@ unsigned int readCityNumberFromKeyboard()
 		cityNumberDigit[0] = cityNumberDigit[0] - '0';
 		totalCityNumber = 10 * totalCityNumber + cityNumberDigit[0];
 	}
-	return totalCityNumber;
+	return totalCityNumber % (sizeof(cities) / sizeof(char));
 }
 
 void intToString(unsigned char value, char *Txt)
@@ -168,7 +168,7 @@ void UartController(void *pvParameters)
 	currentTime.minutes = 10 * (buffer[3] - '0') + buffer[4] - '0';
 	currentTime.seconds = 10 * (buffer[6] - '0') + buffer[7] - '0';
 
-	xQueueSend(xTimeQueue, &currentTime, 0);
+	xQueueSend(uartToControllerQueue, &currentTime, 0);
 
 	uint8_t char_counter;
 	char c[2];
@@ -195,8 +195,8 @@ int main()
 	controllerToLCDQueue = xQueueCreate(1, //size
 										8  // sizeof
 	);
-	xTimeQueue = xQueueCreate(1, //size
-							  8	 // sizeof
+	uartToControllerQueue = xQueueCreate(1, //size
+										 8	// sizeof
 	);
 
 	xTaskCreate(
