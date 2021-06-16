@@ -26,7 +26,6 @@
 
 void lcdInit(void);
 void LCD_data(unsigned char data);
-void LCD_word(char *word, uint8_t size);
 void LCD_justPrint(char *word);
 void LCD_firstLine(char *word);
 void LCD_secondLine(char *word);
