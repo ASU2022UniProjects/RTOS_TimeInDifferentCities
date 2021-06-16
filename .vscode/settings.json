@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "hw_uart.h": "c",
+        "hw_types.h": "c",
+        "hw_memmap.h": "c",
+        "lcd.h": "c",
+        "tm4c123gh6pm.h": "c",
+        "stdint.h": "c",
+        "hw_gpio.h": "c"
+    }
+}
